@@ -1,5 +1,8 @@
 package com.example.agora.Security.Jwt.Auth;
 
+import com.example.agora.Entity.Comment.Comment;
+import com.example.agora.Entity.Post.Post;
+import com.example.agora.Entity.User.User;
 import com.example.agora.Security.AuthorityType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,14 +12,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 public class AuthDetails implements UserDetails {
 
-    private final String userId;
-    private final String userPw;
-    private final AuthorityType authorityType;
+    private final User user;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -25,12 +27,16 @@ public class AuthDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return userPw;
+        return user.getUserPw();
+    }
+
+    public List<Post> getPost(){
+        return this.user.getPostList();
     }
 
     @Override
     public String getUsername() {
-        return userId;
+        return user.getUserId();
     }
 
     @Override
@@ -54,6 +60,6 @@ public class AuthDetails implements UserDetails {
     }
 
     public AuthorityType getAuthorityType(){
-        return authorityType;
+        return this.user.getAuthorityType();
     }
 }

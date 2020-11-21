@@ -37,14 +37,14 @@ public class PostServiceImpl implements PostService {
     public MessageResponse write(WriteRequest request) {
         try{
             AuthDetails authDetails = (AuthDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            userRepository.findByUserId(authDetails.getUserId())
+            userRepository.findByUserId(authDetails.getUsername())
                     .map(user-> {
 
                         postRepository.save(
                                 Post.builder()
                                         .title(request.getTitle())
                                         .contents(request.getContents())
-                                        .userId(user.getUserId())
+                                        .user(user)
                                         .build()
                         );
                         System.out.println(user.getUserId());
@@ -59,7 +59,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PreviewResponse preview(PostIdRequest request) {
         return postRepository.findById(Integer.parseInt(request.getPostId()))
-                .map(post-> new PreviewResponse(post.getUserId(), post.getTitle(), post.getUserId(), post.getCreateAt(), post.getModifyAt())).orElseThrow(PostNotFoundException::new);
+                .map(post-> new PreviewResponse(Integer.toString(post.getPostId()), post.getTitle(), post.getUser().getUserId(), post.getCreateAt(), post.getModifyAt())).orElseThrow(PostNotFoundException::new);
     }
 
     @Override
@@ -75,15 +75,15 @@ public class PostServiceImpl implements PostService {
                             .modifyAt(post.getModifyAt())
                             .likes(post.getLikes())
                             .view(post.getView()+1)
-                            .userId(post.getUserId())
+                            .user(post.getUser())
                             .comments(post.getComments())
                             .build()
                     );
                     List<CommentResponse> responseList = new ArrayList<>();
                     for (Comment comment:post.getComments()) {
-                        responseList.add(new CommentResponse(comment.getCmtId(), comment.getUserId(), comment.getContents(), comment.getCreateAt(), comment.getModifyAt()));
+                        responseList.add(new CommentResponse(comment.getCmtId(), comment.getUserId(), comment.getContents(), comment.getCreateAt(), comment.getModifyAt(), comment.getLikes()));
                     }
-                    return new ViewResponse(Integer.toString(post.getPostId()), post.getTitle(), post.getContents(), post.getUserId(), post.getCreateAt(), post.getModifyAt(), post.getView(), post.getLikes(), responseList);
+                    return new ViewResponse(Integer.toString(post.getPostId()), post.getTitle(), post.getContents(), post.getUser().getUserId(), post.getCreateAt(), post.getModifyAt(), post.getView(), post.getLikes(), responseList);
                 }).orElseThrow(PostNotFoundException::new);
     }
 
@@ -105,7 +105,7 @@ public class PostServiceImpl implements PostService {
             postRepository.save(
                     postRepository.findById(Integer.parseInt(request.getPostId()))
                     .map(post->{
-                        if(!authDetails.getUserId().equals(post.getUserId())){
+                        if(!authDetails.getUsername().equals(post.getUser().getUserId())){
                             throw new NoAuthorityException();
                         }
                         return modifyPost(request, post);
@@ -119,7 +119,7 @@ public class PostServiceImpl implements PostService {
                 .postId(post.getPostId())
                 .title(request.getTitle())
                 .contents(request.getContents())
-                .userId(post.getUserId())
+                .user(post.getUser())
                 .createAt(post.getCreateAt())
                 .modifyAt(new Date())
                 .likes(post.getLikes())
@@ -134,7 +134,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(Integer.parseInt(request.getPostId()))
                 .map(post->{
 
-                    if(authDetails.getUserId().equals(post.getUserId()) || authDetails.getAuthorities().equals(AuthorityType.ROLE_ADMIN)){
+                    if(authDetails.getUsername().equals(post.getUser().getUserId()) || authDetails.getAuthorities().equals(AuthorityType.ROLE_ADMIN)){
                         postRepository.deleteByPostId(post.getPostId());
                     }else{
                         throw new NoAuthorityException();
@@ -144,10 +144,33 @@ public class PostServiceImpl implements PostService {
                 }).orElseThrow(PostNotFoundException::new);
     }
 
+    @Override
+    public MessageResponse like(PostIdRequest request) {
+        return postRepository.findById(Integer.parseInt(request.getPostId()))
+                .map(post->{
+                    postRepository.save(changeLike(post));
+                    return new MessageResponse("성공!");
+                }).orElseThrow(PostNotFoundException::new);
+    }
+
+    public Post changeLike(Post post){
+        return Post.builder()
+                .postId(post.getPostId())
+                .title(post.getTitle())
+                .contents(post.getContents())
+                .comments(post.getComments())
+                .view(post.getView())
+                .likes(post.getLikes()+1)
+                .createAt(post.getCreateAt())
+                .modifyAt(post.getModifyAt())
+                .user(post.getUser())
+                .build();
+    }
+
     public List<SearchData> convertList(List<Post> postList){
         List<SearchData> response = new ArrayList<>();
         for (Post post:postList) {
-            response.add(new SearchData(Integer.toString(post.getPostId()), post.getTitle(), post.getUserId(), post.getCreateAt(), post.getModifyAt()));
+            response.add(new SearchData(Integer.toString(post.getPostId()), post.getTitle(), post.getUser().getUserId(), post.getCreateAt(), post.getModifyAt()));
         }
         return response;
     }

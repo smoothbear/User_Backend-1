@@ -1,6 +1,8 @@
 package com.example.agora.Entity.Post;
 
 import com.example.agora.Entity.Comment.Comment;
+import com.example.agora.Entity.User.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -16,7 +18,6 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Getter
-@Setter
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,8 +31,10 @@ public class Post {
     @Length(max = 1000)
     private String contents;
 
-    @NonNull
-    private String userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    private User user;
 
     @CreationTimestamp
     private Date createAt;

@@ -1,10 +1,6 @@
 package com.example.agora.Controller.Post;
 
-import com.example.agora.Payload.Request.Post.CommentRequest;
-import com.example.agora.Payload.Request.Post.ModifyRequest;
-import com.example.agora.Payload.Request.Post.SearchRequest;
-import com.example.agora.Payload.Request.Post.PostIdRequest;
-import com.example.agora.Payload.Request.Post.WriteRequest;
+import com.example.agora.Payload.Request.Post.*;
 import com.example.agora.Payload.Response.MessageResponse;
 import com.example.agora.Payload.Response.Post.View.PreviewResponse;
 import com.example.agora.Payload.Response.Post.Search.SearchResponse;
@@ -19,6 +15,7 @@ import javax.transaction.Transactional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/post")
+@CrossOrigin(origins = "*")
 public class PostController {
     private final PostService postService;
     private final CommentService commentService;
@@ -28,18 +25,18 @@ public class PostController {
         return postService.write(request);
     }
 
-    @GetMapping("/preview")
+    @PostMapping("/preview")
     public PreviewResponse preview(@RequestBody PostIdRequest request){
         System.out.println(request.getPostId());
         return postService.preview(request);
     }
 
-    @GetMapping("/view")
+    @PostMapping("/view")
     public ViewResponse view(@RequestBody PostIdRequest request){
         return postService.view(request);
     }
 
-    @GetMapping("/search")
+    @PostMapping("/search")
     public SearchResponse search(@RequestBody SearchRequest request){
         return postService.search(request);
     }
@@ -54,6 +51,11 @@ public class PostController {
         return postService.modify(request);
     }
 
+    @PatchMapping("/comment/modify")
+    public MessageResponse commentModify(@RequestBody CommentModifyRequest request){
+        return commentService.modifyComment(request);
+    }
+
     @DeleteMapping("/delete")
     @Transactional
     public MessageResponse delete(@RequestBody PostIdRequest request){
@@ -65,4 +67,18 @@ public class PostController {
         return commentService.comment(request);
     }
 
+    @PatchMapping("/like")
+    public MessageResponse like(@RequestBody PostIdRequest request){
+        return postService.like(request);
+    }
+
+    @PatchMapping("/comment/like")
+    public MessageResponse commentLike(@RequestBody CmtIdRequest request){
+        return commentService.commentLike(request);
+    }
+
+    @PatchMapping("/comment/modify")
+    public MessageResponse modifyComment(@RequestBody ModifyCommentRequest request){
+        return commentService.modifyComment(request);
+    }
 }
