@@ -56,7 +56,7 @@ public class PostController {
         return commentService.modifyComment(request);
     }
 
-    @DeleteMapping("/delete")
+    @PostMapping("/delete")
     @Transactional
     public MessageResponse delete(@RequestBody PostIdRequest request){
         return postService.delete(request);
