@@ -1,10 +1,6 @@
 package com.example.agora.Controller.Post;
 
-import com.example.agora.Payload.Request.Post.CommentRequest;
-import com.example.agora.Payload.Request.Post.ModifyRequest;
-import com.example.agora.Payload.Request.Post.SearchRequest;
-import com.example.agora.Payload.Request.Post.PostIdRequest;
-import com.example.agora.Payload.Request.Post.WriteRequest;
+import com.example.agora.Payload.Request.Post.*;
 import com.example.agora.Payload.Response.MessageResponse;
 import com.example.agora.Payload.Response.Post.View.PreviewResponse;
 import com.example.agora.Payload.Response.Post.Search.SearchResponse;
@@ -65,4 +61,17 @@ public class PostController {
         return commentService.comment(request);
     }
 
+<<<<<<< Updated upstream
+=======
+    @PostMapping("like")
+    public MessageResponse like(@RequestBody PostIdRequest request){
+        return postService.like(request);
+    }
+
+    @PatchMapping("/comment/modify")
+    public MessageResponse modifyComment(@RequestBody ModifyCommentRequest request){
+        return commentService.modifyComment(request);
+    }
+
+>>>>>>> Stashed changes
 }
