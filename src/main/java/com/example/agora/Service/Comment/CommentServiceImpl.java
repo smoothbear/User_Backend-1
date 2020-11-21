@@ -29,7 +29,7 @@ public class CommentServiceImpl implements CommentService{
 
                     Comment comment = Comment.builder()
                             .contents(request.getComment())
-                            .userId(AuthDetails.getUserId())
+                            .userId(AuthDetails.getUsername())
                             .post(post)
                             .createAt(new Date())
                             .build();

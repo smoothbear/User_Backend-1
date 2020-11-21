@@ -17,4 +17,5 @@ public interface PostService {
     public SearchResponse list();
     public MessageResponse modify(ModifyRequest request);
     public MessageResponse delete(PostIdRequest request);
+    public MessageResponse like(PostIdRequest request);
 }
