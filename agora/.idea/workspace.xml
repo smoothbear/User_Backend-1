@@ -92,19 +92,6 @@
     <property name="aspect.path.notification.shown" value="true" />
   </component>
   <component name="RunManager">
-    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="CLASS" />
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="AgoraApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
       <module name="agora.main" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.agora.AgoraApplication" />
