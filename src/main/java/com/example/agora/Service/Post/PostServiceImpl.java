@@ -81,7 +81,7 @@ public class PostServiceImpl implements PostService {
                     );
                     List<CommentResponse> responseList = new ArrayList<>();
                     for (Comment comment:post.getComments()) {
-                        responseList.add(new CommentResponse(comment.getCmtId(), comment.getUserId(), comment.getContents(), comment.getCreateAt(), comment.getModifyAt()));
+                        responseList.add(new CommentResponse(comment.getCmtId(), comment.getUserId(), comment.getContents(), comment.getCreateAt(), comment.getModifyAt(), comment.getLikes()));
                     }
                     return new ViewResponse(Integer.toString(post.getPostId()), post.getTitle(), post.getContents(), post.getUser().getUserId(), post.getCreateAt(), post.getModifyAt(), post.getView(), post.getLikes(), responseList);
                 }).orElseThrow(PostNotFoundException::new);

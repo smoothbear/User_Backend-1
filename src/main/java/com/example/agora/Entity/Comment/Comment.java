@@ -27,6 +27,7 @@ public class Comment {
     @NonNull
     private String contents;
 
+    @Column(length = 20)
     private String userId;
 
     private Date createAt;
