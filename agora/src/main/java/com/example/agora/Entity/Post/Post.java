@@ -47,7 +47,7 @@ public class Post {
     @NonNull
     private int likes;
 
-    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<Comment> comments;
 }

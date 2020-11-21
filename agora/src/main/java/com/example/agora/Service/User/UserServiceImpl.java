@@ -42,6 +42,8 @@ public class UserServiceImpl implements UserService{
     @Override
     public String register(UserRequest request) {
         try{
+            System.out.println(request.getUserId());
+            System.out.println(request.getUserPw());
             userRepository.save(
                     User.builder()
                             .authorityType(AuthorityType.ROLE_USER)
