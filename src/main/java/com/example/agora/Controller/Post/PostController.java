@@ -77,4 +77,8 @@ public class PostController {
         return commentService.commentLike(request);
     }
 
+    @PatchMapping("/comment/modify")
+    public MessageResponse modifyComment(@RequestBody ModifyCommentRequest request){
+        return commentService.modifyComment(request);
+    }
 }

@@ -8,6 +8,9 @@ import com.example.agora.Exception.NoAuthorityException;
 import com.example.agora.Exception.PostNotFoundException;
 import com.example.agora.Payload.Request.Post.CmtIdRequest;
 import com.example.agora.Payload.Request.Post.CommentModifyRequest;
+import com.example.agora.Exception.NoAuthorityException;
+import com.example.agora.Exception.PostNotFoundException;
+import com.example.agora.Payload.Request.Post.ModifyCommentRequest;
 import com.example.agora.Payload.Response.MessageResponse;
 import com.example.agora.Security.Jwt.Auth.AuthDetails;
 import com.example.agora.Payload.Request.Post.CommentRequest;
@@ -62,6 +65,18 @@ public class CommentServiceImpl implements CommentService{
     }
 
     private Comment like(Comment comment){
+    public MessageResponse modifyComment(ModifyCommentRequest request) {
+        AuthDetails authDetails = (AuthDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        commentRepository.findById(request.getCmtId())
+                .map(comment->{
+                    if(!authDetails.getUsername().equals(comment.getUserId()))
+                        throw new NoAuthorityException();
+                    return commentRepository.save(modify(request, comment));
+                });
+        return new MessageResponse("댓글 수정 완료!");
+    }
+
+    public Comment modify(ModifyCommentRequest request, Comment comment){
         return Comment.builder()
                 .post(comment.getPost())
                 .createAt(comment.getCreateAt())
@@ -82,6 +97,10 @@ public class CommentServiceImpl implements CommentService{
                 .cmtId(comment.getCmtId())
                 .createAt(comment.getCreateAt())
                 .post(comment.getPost())
+                .contents(request.getComment())
+                .likes(comment.getLikes())
+                .modifyAt(new Date())
+                .userId(comment.getUserId())
                 .build();
     }
 }
