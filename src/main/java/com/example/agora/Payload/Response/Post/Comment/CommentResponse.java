@@ -13,4 +13,5 @@ public class CommentResponse {
     private final String contents;
     private final Date createAt;
     private final Date modifyAt;
+    private final int likes;
 }

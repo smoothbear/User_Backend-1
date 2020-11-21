@@ -51,6 +51,11 @@ public class PostController {
         return postService.modify(request);
     }
 
+    @PatchMapping("/comment/modify")
+    public MessageResponse commentModify(@RequestBody CommentModifyRequest request){
+        return commentService.modifyComment(request);
+    }
+
     @DeleteMapping("/delete")
     @Transactional
     public MessageResponse delete(@RequestBody PostIdRequest request){
@@ -62,11 +67,16 @@ public class PostController {
         return commentService.comment(request);
     }
 
-    @PostMapping("like")
+    @PatchMapping("/like")
     public MessageResponse like(@RequestBody PostIdRequest request){
         return postService.like(request);
     }
-  
+
+    @PatchMapping("/comment/like")
+    public MessageResponse commentLike(@RequestBody CmtIdRequest request){
+        return commentService.commentLike(request);
+    }
+
     @PatchMapping("/comment/modify")
     public MessageResponse modifyComment(@RequestBody ModifyCommentRequest request){
         return commentService.modifyComment(request);

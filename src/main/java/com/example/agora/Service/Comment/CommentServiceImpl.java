@@ -3,6 +3,11 @@ package com.example.agora.Service.Comment;
 import com.example.agora.Entity.Comment.Comment;
 import com.example.agora.Entity.Comment.CommentRepository;
 import com.example.agora.Entity.Post.PostRepository;
+import com.example.agora.Exception.CommentNotFoundException;
+import com.example.agora.Exception.NoAuthorityException;
+import com.example.agora.Exception.PostNotFoundException;
+import com.example.agora.Payload.Request.Post.CmtIdRequest;
+import com.example.agora.Payload.Request.Post.CommentModifyRequest;
 import com.example.agora.Exception.NoAuthorityException;
 import com.example.agora.Exception.PostNotFoundException;
 import com.example.agora.Payload.Request.Post.ModifyCommentRequest;
@@ -39,6 +44,27 @@ public class CommentServiceImpl implements CommentService{
     }
 
     @Override
+    public MessageResponse modifyComment(CommentModifyRequest request) {
+        AuthDetails user = (AuthDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return commentRepository.findById(Integer.parseInt(request.getCmtId()))
+                .map(comment->{
+                    if(!user.getUsername().equals(comment.getUserId()))
+                        throw new NoAuthorityException();
+                    commentRepository.save(modify(request, comment));
+                    return new MessageResponse("댓글 수정 완료");
+                }).orElseThrow(CommentNotFoundException::new);
+    }
+
+    @Override
+    public MessageResponse commentLike(CmtIdRequest request) {
+        return commentRepository.findById(Integer.parseInt(request.getCmtId()))
+                .map(comment->{
+                    commentRepository.save(like(comment));
+                    return new MessageResponse("성공!");
+                }).orElseThrow(CommentNotFoundException::new);
+    }
+
+    private Comment like(Comment comment){
     public MessageResponse modifyComment(ModifyCommentRequest request) {
         AuthDetails authDetails = (AuthDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         commentRepository.findById(request.getCmtId())
@@ -55,6 +81,22 @@ public class CommentServiceImpl implements CommentService{
                 .post(comment.getPost())
                 .createAt(comment.getCreateAt())
                 .cmtId(comment.getCmtId())
+                .contents(comment.getContents())
+                .likes(comment.getLikes() + 1)
+                .modifyAt(comment.getModifyAt())
+                .userId(comment.getUserId())
+                .build();
+    }
+
+    private Comment modify(CommentModifyRequest request, Comment comment){
+        return Comment.builder()
+                .userId(comment.getUserId())
+                .modifyAt(new Date())
+                .likes(comment.getLikes())
+                .contents(request.getComment())
+                .cmtId(comment.getCmtId())
+                .createAt(comment.getCreateAt())
+                .post(comment.getPost())
                 .contents(request.getComment())
                 .likes(comment.getLikes())
                 .modifyAt(new Date())
