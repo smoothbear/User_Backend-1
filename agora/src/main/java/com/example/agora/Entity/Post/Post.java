@@ -50,4 +50,9 @@ public class Post {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JsonManagedReference
     private List<Comment> comments;
+
+    public Post addViews() {
+        this.view += 1;
+        return this;
+    }
 }

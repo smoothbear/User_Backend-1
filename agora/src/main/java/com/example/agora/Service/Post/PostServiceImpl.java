@@ -67,17 +67,7 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(Integer.parseInt(request.getPostId()))
                 .map(post-> {
                     postRepository.save(
-                            Post.builder()
-                                    .postId(post.getPostId())
-                                    .title(post.getTitle())
-                                    .contents(post.getContents())
-                                    .createAt(post.getCreateAt())
-                                    .modifyAt(post.getModifyAt())
-                                    .likes(post.getLikes())
-                                    .view(post.getView()+1)
-                                    .user(post.getUser())
-                                    .comments(post.getComments())
-                                    .build()
+                            post.addViews()
                     );
                     List<CommentResponse> responseList = new ArrayList<>();
                     for (Comment comment:post.getComments()) {
